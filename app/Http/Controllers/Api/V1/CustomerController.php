@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Customer;
 use App\Http\Resources\V1\CustomerResource;
 use App\Http\Resources\V1\CustomerCollection;
-use App\Services\V1\CustomerQuery;
+use App\Filters\V1\CustomersFilter;
 
 class CustomerController extends Controller
 {
@@ -16,13 +16,14 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $filter = new CustomerQuery($request);
+        $filter = new CustomersFilter();
         $queryItems = $filter->transform($request); //[['colum', 'operator', 'value']
 
         if(count($queryItems) == 0){
             return new CustomerCollection(Customer::paginate());
         } else {
-            return new CustomerCollection(Customer::where($queryItems)->paginate());
+            $customers = Customer::where($queryItems)->paginate();
+            return new CustomerCollection($customers->appends($request->query()));
         }
 
     }
