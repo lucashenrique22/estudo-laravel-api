@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Http\Resources\V1\CustomerResource;
 use App\Http\Resources\V1\CustomerCollection;
 use App\Filters\V1\CustomersFilter;
+use App\Http\Requests\V1\StoreCustomerRequest;
 
 class CustomerController extends Controller
 {
@@ -44,7 +45,7 @@ class CustomerController extends Controller
      */
     public function store(StoreCustomerRequest $request)
     {
-        //
+        return new CustomerResource(Customer::create($request->all()));
     }
 
     /**
@@ -52,7 +53,7 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        $includeInvoices = $request->query('includeInvoices');
+        $includeInvoices = request()->query('includeInvoices');
 
         if($includeInvoices) {
             return new CustomerResource($customer->loadMissing('invoices'));
